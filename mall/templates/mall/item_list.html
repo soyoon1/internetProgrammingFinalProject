@@ -1,0 +1,102 @@
+{% extends 'mall/base.html' %}
+{% block head_title %}
+    Item
+{% endblock %}
+{% block main_area %}
+{% if user.is_authenticated %}
+    {% if user.is_superuser or user.is_staff %}
+        <a href="/mall/create_item/" role="button"
+           class="btn btn-info btn-sm float-right">
+            <i class ="fas fa-pen"></i> New Item
+        </a>
+    {% endif %}
+{% endif %}
+<h2 class="mb-5">Item
+    {% if search_info %}
+    <span class="badge badge-light">{{search_info}}</span>
+    {% endif %}
+    {% if category %}
+     - <span class="badge badge-light">{{ category }} ({{category.item_set.count}})</span>                        <!--카테고리부분-->
+    {% endif %}
+    {% if tag %}
+     - <i class="fas fa-tag"></i>
+       <span class="badge badge-light">
+         {{ tag }} ({{tag.item_set.count}})
+       </span>
+    {% endif %}
+    {% if manufacturer %}
+    - <span class="badge badge-light">{{manufacturer}} ({{manufacturer.item_set.count}})</span>
+    {% endif %}
+</h2>
+<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-3 justify-content-center">
+
+    {% if item_list.exists %}
+    {% for i in item_list %}
+    <div class="col mb-5" id="item-{{i.pk}}">
+        <div class="card h-100">
+            {% if i.category %}
+                <div class="badge bg-light text-white position-absolute" style="top: 0.5rem; right: 0.5rem">
+                    <a href="{{i.category.get_absolute_url}}">{{i.category}}</a>
+                </div>      <!--카테고리부분-->
+            {% else %}
+                <div class="badge bg-light text-white position-absolute" style="top: 0.5rem; right: 0.5rem">
+                    <a href="/mall/category/no_category/">미분류</a>
+                </div>
+            {% endif %}
+            <!-- Sale badge
+            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>-->
+            <!-- Product image-->
+            <img class="card-img-top" style="height: 15rem; object-fit: cover;" src="{{i.image.url}}" alt="{{i}}의 상품 이미지" />   <!--image-fluid-->
+            <!-- Product details-->
+            <div class="card-body p-4">
+                {% if i.tags.exists %}
+                    {% for t in i.tags.iterator %}
+                            <a class="badge badge-pill badge-light position-absolute" style="top: 15.8rem; left: 0.3rem" href="{{t.get_absolute_url}}">{{t}}</a>
+                    {% endfor %}
+                    <br><br>
+                {% endif %}
+                <div class="text-center">
+                    <a class="position-absolute" style="top: 15.5rem; right: 0.5rem" href="{{i.manufacturer.get_absolute_url}}">[{{i.manufacturer}}]</a>
+                    <!-- Product name-->
+                    <h5 class="fw-bolder mt-4">{{i.name}}</h5>
+                    <!-- Product price-->
+                    {{i.price}} ₩
+                </div>
+                <!--Product description-->
+                <p class="card-text mt-3" style="font-size: small; text-align: center;">{{i.hook_text}}</p>
+            </div>
+
+            <!-- Product actions-->
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="text-center">
+                    <a class="btn btn-outline-dark mt-auto" href="{{i.get_absolute_url}}">상품 상세보기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+        <h5>아무 상품이 없습니다.</h5>
+    {% endif %}
+</div>
+
+<!-- Pagination-->
+    {% if is_paginated %}
+    <nav aria-label="Pagination">
+      <hr class="my-0" />
+        <ul class="pagination justify-content-center my-4">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{page_obj.previous_page_number}}" tabindex="-1" aria-disabled="true">Newer</a></li>
+          {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+          {% endif %}
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{page_obj.next_page_number}}">Older</a></li>
+          {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#!">Older</a></li>
+          {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+{% endblock %}

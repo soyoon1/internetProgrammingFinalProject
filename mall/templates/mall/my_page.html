@@ -1,0 +1,130 @@
+{% extends 'mall/base.html' %}
+{% load socialaccount %}
+{% block head_title %}
+    My page
+{% endblock %}
+{% block main_area %}
+     <h2 class="mb-3">My Page <i class="bi bi-person"></i></h2>
+     <h5>사용자 정보</h5> <br>
+    <div class="p-2 border rounded">
+         <div class="mb-3">
+            {% if user.socialaccount_set.all.0.get_avatar_url %}   <!--all.0 과 first는 같다.-->
+            <img class="rounded-circle mr-3" src="{{user.socialaccount_set.all.0.get_avatar_url}}" width="50px">
+            {% else %}
+            <img class="rounded-circle mr-3" src="https://dummyimage.com/100x100/ced4da/6c757d.jpg" width="50px">
+            {% endif %}
+            {{ user.username }}
+         </div>
+        {% if user.email %}
+        <p>이메일: {{ user.email }}</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-5">
+        <h3 class="mb-3">My Comment 내가 쓴 댓글 <i class="bi bi-chat-left"></i></h3>
+        {% if comment_list %}
+        {% for c in comment_list %}
+            <div class="card my-2 pl-2">
+                <div class="media-body ms-3">
+                    <div class="float-right">
+                        <a role="button" class="btn btn-sm btn-outline-dark float-right m-2"
+                            href="{{c.get_absolute_url}}">
+                            댓글 자세히 보기
+                        </a>
+                    </div>
+                    <div class="fw-bold">
+                        {{c.author.username}}
+                        <small class="text-muted">{{c.created_at}}</small>
+                    </div>
+                    <p>{{c.content | linebreaks }}</p>
+                    {% if c.created_at != c.modified_at %}
+                        <p class="text-muted float-right">
+                            <small>Updated : {{c.modified_at}}</small>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% else %}
+        <br> <br>
+        <p class="text-secondary mt-5 text-center">댓글이 없습니다.</p>
+        {% endif %}
+    </div>
+
+    <div class="mt-5">
+        <h3 class="mb-3">My Cart 장바구니 <i class="bi bi-cart"></i></h3>
+        {% if not cart_items %}
+            <br> <br>
+            <p class="text-secondary mt-5 text-center">장바구니에 상품이 없습니다.</p>
+        {% else %}
+            <div class="row mx-auto">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                    <table class="table" style="min-width: 400px; font-size:14px;">
+
+                        <tr>
+                            <th colspan="5">
+                                Items 상품
+                            </th>
+                        </tr>
+                        <tbody>
+                            {% for cart_item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <a href="{{cart_item.item.get_absolute_url}}"><img src="{{cart_item.item.image.url}}" alt="{{cart_item}}의 이미지" class="float-left rounded" style="width:100px; height:100px;"></a>
+                                    </td>
+                                    <td class="text-left">
+                                        {{cart_item.item.name}}
+                                        <br>
+                                        총 금액: {{cart_item.item.price}} 원
+                                        <br>
+                                        수량: {{cart_item.quantity}}
+                                    </td>
+                                    <td>
+                                        {{cart_item.sub_total}}
+                                    </td>
+                                    <td>
+                                        <a href="/mall/add_cart/{{cart_item.item.pk}}" style="text-decoration: none;"><i class="fas fa-plus-circle" style="text-decoration: none; color: gray;"></i></a>
+                                        <a href="/mall/remove/{{cart_item.item.pk}}" style="text-decoration: none;"><i class="fas fa-minus-circle" style="text-decoration: none; color: gray;"></i></a>
+                                        <a href="/mall/full_remove/{{cart_item.item.pk}}" style="text-decoration: none;"><i class="fas fa-trash-alt" style="text-decoration: none; color: gray;"></i></a>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                    <table class="table" style="min-width: 400px; font-size:14px;">
+                        <tr>
+                            <th>
+                                Checkout
+                            </th>
+                        </tr>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    결제 전 반드시 장바구니를 확인해 주세요.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-left">
+                                    총 금액 : <strong>{{total}}</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mx-auto">
+                        <a role="button" class="btn btn-sm btn-outline-dark float-center m-2"
+                            href="/mall/">
+                            쇼핑 계속하기
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <br>
+        {% endif %}
+    </div>
+
+
+
+{% endblock %}

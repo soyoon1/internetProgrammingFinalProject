@@ -1,0 +1,56 @@
+<!-- Search widget-->
+                              <div class="card mb-4">
+                                  <div class="card-header"><i class="fa-solid fa-magnifying-glass"></i> Search</div>
+                                    <div class="card-body">
+                                        <div class="input-group">
+                                            <input id="search-input" class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
+                                            <button class="btn btn-primary ml-1" id="button-search" type="button" onclick="searchItem()">Go!</button>
+                                        </div>
+                                    </div>
+                              </div>
+                              <script>
+                                  function searchItem(){
+                                    searchValue = document.getElementById('search-input').value.trim();
+                                    if( searchValue.length > 1 ){
+                                        // 검색 url view template
+                                        location.href = "/mall/search/"+ searchValue + "/";
+                                    }
+                                    else{
+                                        alert('검색어(' + searchValue + ')가 너무 짧아요.');
+                                    }
+                                  };
+
+                                  document.getElementById('search-input').addEventListener(
+                                    'keyup', function(event){
+                                        if(event.key === 'Enter'){  // 값과 타입 둘 다 비교해 줌. 안 됨 alert 창 추가해보기 껐다 다시 켜 보기 깃에 업로드 하기
+                                            searchItem();
+                                        }
+                                    });
+                              </script>
+                              <!-- Categories widget-->
+                              <div class="card mb-4" id='category-card'>
+                                  <div class="card-header">Categories</div>
+                                  <div class="card-body">
+                                      <div class="row">
+                                              <ul class="list-unstyled mb-0 ml-2">
+                                                  {% for c in categories %}
+                                                    <li><a href="{{c.get_absolute_url}}">{{c}} ({{c.item_set.count}})</a></li>
+                                                  {% endfor %}
+                                                   <!-- <li><a href="/mall/category/no_category/">미분류 ({{no_category_item_count}})</a></li> -->
+                                              </ul>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <div class="card mb-4" id='manufacturer-card'>
+                                  <div class="card-header">Manufacturers</div>
+                                  <div class="card-body">
+                                      <div class="row">
+                                              <ul class="list-unstyled mb-0 ml-2">
+                                                  {% for m in manufacturers %}
+                                                    <li><a href="{{m.get_absolute_url}}">{{m}} ({{m.item_set.count}})</a></li>
+                                                  {% endfor %}
+                                              </ul>
+                                      </div>
+                                  </div>
+                              </div>
